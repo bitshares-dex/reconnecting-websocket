@@ -172,6 +172,7 @@
         var ws;
         var forcedClose = false;
         var timedOut = false;
+        var t = null;
         var eventTarget = document.createElement('div');
 
         // Wire up "on*" properties as event handlers
@@ -267,7 +268,7 @@
                     }
 
                     var timeout = self.reconnectInterval * Math.pow(self.reconnectDecay, self.reconnectAttempts);
-                    setTimeout(function() {
+                    t = setTimeout(function() {
                         self.reconnectAttempts++;
                         self.open(true);
                     }, timeout > self.maxReconnectInterval ? self.maxReconnectInterval : timeout);
@@ -322,6 +323,10 @@
             forcedClose = true;
             if (ws) {
                 ws.close(code, reason);
+            }
+            if (t) {
+                clearTimeout(t);
+                t = null;
             }
         };
 
